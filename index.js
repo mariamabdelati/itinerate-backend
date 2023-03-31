@@ -3,6 +3,7 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const morgan = require('morgan');
 const tripRouter = require('./routes/tripRoutes.js');
+const userRouter = require("./routes/userRoutes");
 
 // Load environment variables from .env file
 dotenv.config();
@@ -19,6 +20,8 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 app.use('/api/v1/trips', tripRouter);
+app.use('/api/v1/users', userRouter);
+
 
 module.exports = {
   app,

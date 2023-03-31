@@ -1,7 +1,8 @@
 // Description: Handles all the logic for the trip routes
 const Trip = require('../models/Trip.js');
+const APIQueryUtils = require("../utils/apiQueryUtils");
 
-// // Create a new trip with the data from the request body
+// Create a new trip with the data from the request body
 const createTrip = async (req, res) => {
     try {
         const trip = await Trip.create(req.body);
@@ -20,14 +21,19 @@ const createTrip = async (req, res) => {
 // Retrieve all trips from the database
 const retrieveAllTrips = async (req, res) => {
     try {
-        const trips = await Trip.find();
+        // Retrieve the query parameters from the request URL
+        const queryFeatures = new APIQueryUtils(Trip.find(), req.query).filter().sort().limitFields();
+        const trips = await queryFeatures.query;
+
+        // const trips = await Trip.find();
+
         // Send the retrieved trips to the client
         res.status(200).json({
             status: "success", message: "Trips retrieved successfully", results: trips.length, data: trips,
         });
     } catch (error) {
         // If an error occurs, send it to the client
-        res.status(400).json({
+        res.status(404).json({
             status: "error", error: error.message
         });
     }
@@ -45,7 +51,7 @@ const retrieveTripById = async (req, res) => {
 
     } catch (error) {
         // If an error occurs, send it to the client
-        res.status(400).json({
+        res.status(404).json({
             status: "error", error: error.message
         });
     }
@@ -63,7 +69,7 @@ const updateTripById = async (req, res) => {
         });
     } catch (error) {
         // If an error occurs, send it to the client
-        res.status(400).json({
+        res.status(404).json({
             status: "error", error: error.message
         });
     }
@@ -80,7 +86,7 @@ const deleteTripById = async (req, res) => {
         });
     } catch (error) {
         // If an error occurs, send it to the client
-        res.status(400).json({
+        res.status(404).json({
             status: "error", error: error.message
         });
     }
