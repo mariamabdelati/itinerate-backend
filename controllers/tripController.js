@@ -56,10 +56,17 @@ const retrieveTripById = async (req, res) => {
         // Get the food data for the trip
         const foodData = await getFood(trip.nationality);
 
+        // Add the weather, currency and food data to the trip
+        const tripData = {
+            ...trip.toObject(),
+            weatherData,
+            currencyData,
+            foodData
+        };
 
         // Send the retrieved trip to the client
         res.status(200).json({
-            status: "success", message: "Trip retrieved successfully", data: trip,
+            status: "success", message: "Trip retrieved successfully", data: tripData,
         });
 
     } catch (error) {

@@ -28,7 +28,7 @@ const getWeather = async (location, startDate, endDate) => {
         }).map((day) => {
             return {
                 date: new Date(day.dt * 1000).toLocaleDateString(),
-                ...day
+                ...day.temp,
             };
         });
 
@@ -73,21 +73,14 @@ const getCurrency = async (currency, currencyCode) => {
         // Get the currency exchange rate for the given currency using the currencyconverterapi.com
         const currencyRate = await axios.get(`https://free.currconv.com/api/v7/convert?q=${currency}_${currencyCode}&compact=ultra&apiKey=${process.env.CURRENCY_API_KEY}`);
 
-        return currencyRate.data;
+        return currencyRate.data[`${currency}_${currencyCode}`];
     }  catch (error) {
         console.log(error);
         return [];
     }
 }
 
-const express = require('express');
-
-const weatherRouter = express.Router();
-
-weatherRouter.get('/weather', getWeather);
-
 module.exports = {
-    weatherRouter,
     getWeather,
     getFood,
     getCurrency
