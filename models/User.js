@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
-const crypto = require('crypto');
 
 // Create a new schema for the database
 const userSchema = new mongoose.Schema(
@@ -26,9 +25,6 @@ const userSchema = new mongoose.Schema(
             default: 'user',
             lowercase: true,
         },
-        photo: {
-            type: String,
-        },
         password: {
             type: String,
             required: [true, "A password is required"],
@@ -50,12 +46,6 @@ const userSchema = new mongoose.Schema(
             }
         },
         passwordChangedAt: {
-            type: Date,
-        },
-        passwordResetToken: {
-            type: String,
-        },
-        passwordResetExpires: {
             type: Date,
         },
     },
@@ -81,6 +71,16 @@ userSchema.pre("save", async function (next) {
 // Create an instance method to check if the password is correct
 userSchema.methods.correctPassword = async function (candidatePassword, userPassword) {
     return await bcrypt.compare(candidatePassword, userPassword);
+}
+
+// Create an instance method to check if the user has changed their password after the token was issued
+userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
+    if (this.passwordChangedAt) {
+        const changedTimestamp = parseInt(this.passwordChangedAt.getTime() / 1000, 10);
+
+        return JWTTimestamp < changedTimestamp;
+    }
+    return false;
 }
 
 // Create a new model using the schema

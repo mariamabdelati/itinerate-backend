@@ -1,5 +1,6 @@
 class APIQueryUtils {
-    constructor(query, queryString) {
+    constructor(model, query, queryString) {
+        this.model = model;
         this.query = query;
         this.queryString = queryString;
     }
@@ -10,6 +11,13 @@ class APIQueryUtils {
         // Exclude the fields that are not part of the model
         const excludedFields = ['page', 'sort', 'limit', 'fields'];
         excludedFields.forEach(field => delete queryObj[field]);
+
+        // Filter out the query parameters that are not supported
+        Object.keys(queryObj).forEach(key => {
+            if (!this.model.schema.obj.hasOwnProperty(key)) {
+                delete queryObj[key];
+            }
+        });
 
         // Convert the query parameters object to a string
         let queryStr = JSON.stringify(queryObj);

@@ -115,22 +115,15 @@ const tripSchema = new mongoose.Schema(
     },
     {
         timestamps: true,
-        //toJSON: { virtuals: true },
-        //toObject: { virtuals: true },
     },
 
 );
-
-//tripSchema.virtual('dailyCost').get(function() {
-//    return this.flightCost + this.accommodationCost + this.mealCost + this.visaCost + this.transportationCost;
-//});
 
 // Calculate the daily cost of the trip, middleware function
 tripSchema.pre('save', function(next) {
     this.dailyCost = this.flightCost + this.accommodationCost + this.mealCost + this.visaCost + this.transportationCost;
     next();
 });
-
 
 // Create a new model using the schema
 const Trip = mongoose.model("Trip", tripSchema);
